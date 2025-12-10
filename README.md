@@ -1,1 +1,1 @@
-**Carte du tourisme écoculturel de l'île d'Idjwi**La province du Nord et du Sud Kivu de la République démocratique du Congo et l'île d'Idjwi sont connues dans le monde entier pour être une zone de conflit armé. Le réseau Droits, Environnement et Citoyenneté - DEC a créé cette carte pour renverser cette rhétorique et montrer la beauté et la richesse de la nature et des personnes qui vivent sur l'île d'Idjwi et au bord du lac Kivu.
+**ATLAS OF THE BUGUNGU PEOPLE**
