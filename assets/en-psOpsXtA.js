@@ -1,0 +1,1 @@
+const e={title:"ATLAS OF THE BUGUNGU PEOPLE",title_:"Bugungu cartography, by Bugungu People",modalTitle:"ATLAS OF THE BUGUNGU PEOPLE",modalBody:"Description of the Atlas of the Bugungu People. Max 1,000 characthers without space",placeholder:"Search by name..."},t={app:e};export{e as app,t as default};
