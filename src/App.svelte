@@ -6,12 +6,14 @@
 
   import { points } from "./data/points.js";
   import { toponyms } from "./data/toponyms.js";
+  import { landmarks } from "./data/landmarks.js";
   import { t } from "svelte-i18n";
   import { onMount } from "svelte";
 
   let map;
   let geoJsonLayer;
   let toponymsLayer;
+  let landmarksLayer;
 
   let showModal = true;
   let modalEl;
@@ -24,24 +26,47 @@
   const isMobile =
     window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
 
-  let activeLayers = ["points", "toponyms"];
+  let activeLayers = ["points", "toponyms", "landmarks"];
 
   // ----------------LEGEND ----------------
-  let allFeatures = [...points.features, ...toponyms.features];
+  const featuresWithLayer = [
+    ...points.features.map((f) => ({ feature: f, layerId: "points" })),
+    ...toponyms.features.map((f) => ({ feature: f, layerId: "toponyms" })),
+    ...landmarks.features.map((f) => ({ feature: f, layerId: "landmarks" })),
+  ];
 
   let legendMap = new Map();
 
-  allFeatures.forEach((feature) => {
-    const { type, name, svgHtml } = feature.properties;
-
-    const layerId = points.features.includes(feature) ? "points" : "toponyms";
+  featuresWithLayer.forEach(({ feature, layerId }) => {
+    const props = feature.properties || {};
+    const type = props.type || "unknown";
+    const name = props.name || type;
+    const svgHtml = props.svgHtml || "";
 
     if (!legendMap.has(type)) {
       legendMap.set(type, { type, name, svgHtml, layerId });
+    } else {
+      const existing = legendMap.get(type);
+      if (
+        activeLayers.includes(layerId) &&
+        !activeLayers.includes(existing.layerId)
+      ) {
+        legendMap.set(type, { type, name, svgHtml, layerId });
+      }
     }
   });
 
   let combinedLegend = Array.from(legendMap.values());
+
+  const legendOrder = {
+    landmarks: 1,
+    points: 3,
+    toponyms: 2,
+  };
+
+  combinedLegend = combinedLegend.sort(
+    (a, b) => legendOrder[a.layerId] - legendOrder[b.layerId],
+  );
 
   // --------------- ACTIVE LEGEND ----------------
   $: activeLegend = combinedLegend.filter((item) =>
@@ -63,7 +88,7 @@
       <div style="display:flex;flex-direction:column;align-items:center;">
         ${
           zoom > 14 && !isMobile
-            ? `<div class='marker-label' style="color:${hr || "#000"};">${name}</div>`
+            ? `<div class='marker-label' style="color:${hr || "#000"};-webkit-text-stroke-color:${hr || "#000"};">${name}</div>`
             : ""
         }
         ${svgHtml}
@@ -131,6 +156,15 @@
     }).addTo(map);
   }
 
+  function addLandmarksLayer() {
+    landmarksLayer = L.geoJSON(landmarks, {
+      pointToLayer: (feature, latlng) =>
+        L.marker(latlng, { icon: createIcon(feature, 15, "landmarks") }),
+      onEachFeature: (feature, layer) =>
+        onEachFeature(feature, layer, "landmarks"),
+    }).addTo(map);
+  }
+
   // ---------------- ZOOM ICON SCALING ----------------
   function setupZoomScaling() {
     map.on("zoomend", () => {
@@ -141,6 +175,9 @@
       );
       toponymsLayer.eachLayer((layer) =>
         layer.setIcon(createIcon(layer.feature, zoom, "toponyms")),
+      );
+      landmarksLayer.eachLayer((layer) =>
+        layer.setIcon(createIcon(layer.feature, zoom, "landmarks")),
       );
 
       // restore highlight
@@ -173,9 +210,20 @@
     }
 
     if (point.layerType === "points") {
-      targetLayer = findLayer(geoJsonLayer) || findLayer(toponymsLayer);
-    } else {
-      targetLayer = findLayer(toponymsLayer) || findLayer(geoJsonLayer);
+      targetLayer =
+        findLayer(geoJsonLayer) ||
+        findLayer(toponymsLayer) ||
+        findLayer(landmarksLayer);
+    } else if (point.layerType === "toponyms") {
+      targetLayer =
+        findLayer(toponymsLayer) ||
+        findLayer(geoJsonLayer) ||
+        findLayer(landmarksLayer);
+    } else if (point.layerType === "landmarks") {
+      targetLayer =
+        findLayer(landmarksLayer) ||
+        findLayer(geoJsonLayer) ||
+        findLayer(toponymsLayer);
     }
 
     if (!targetLayer) return;
@@ -187,10 +235,13 @@
     map.flyTo(target, targetZoom, { duration: 1 });
 
     map.once("moveend", () => {
-      targetLayer.openPopup();
-
       const offsetLat = lat + 0.0008;
+
       map.panTo([offsetLat, lng], { animate: true });
+
+      map.once("moveend", () => {
+        targetLayer.openPopup();
+      });
     });
   }
 
@@ -236,23 +287,24 @@
 
     addGeoJson();
     addToponymsLayer();
+    addLandmarksLayer();
     setupZoomScaling();
 
     layerControls = [
       {
-        id: "points",
-        name: "Layer TEST",
-        description: "Description TEST",
+        id: "landmarks",
+        name: "Ecocultural and spiritual tourism",
+        description: "Description 'Ecocultural and spiritual tourism' layer",
         visible: true,
-        layer: geoJsonLayer,
+        layer: landmarksLayer,
         toggle: (v) => {
           if (v) {
-            map.addLayer(geoJsonLayer);
-            if (!activeLayers.includes("points"))
-              activeLayers = [...activeLayers, "points"];
+            map.addLayer(landmarksLayer);
+            if (!activeLayers.includes("landmarks"))
+              activeLayers = [...activeLayers, "landmarks"];
           } else {
-            map.removeLayer(geoJsonLayer);
-            activeLayers = activeLayers.filter((id) => id !== "points");
+            map.removeLayer(landmarksLayer);
+            activeLayers = activeLayers.filter((id) => id !== "landmarks");
           }
         },
       },
@@ -274,6 +326,23 @@
           }
         },
       },
+      {
+        id: "points",
+        name: "Layer TEST",
+        description: "Description TEST",
+        visible: true,
+        layer: geoJsonLayer,
+        toggle: (v) => {
+          if (v) {
+            map.addLayer(geoJsonLayer);
+            if (!activeLayers.includes("points"))
+              activeLayers = [...activeLayers, "points"];
+          } else {
+            map.removeLayer(geoJsonLayer);
+            activeLayers = activeLayers.filter((id) => id !== "points");
+          }
+        },
+      },
     ];
 
     return () => document.removeEventListener("click", handleClickOutside);
@@ -286,7 +355,9 @@
     <img src="./BHIC.png" alt="Logo" class="bottom-bar-logo" />
     <div class="bottom-bar-title">
       <span>{@html $t("app.title")}</span><br />
-      <span class="title_" style="font-size:0.9rem;">{@html $t("app.title_")}</span>
+      <span class="title_" style="font-size:0.9rem;"
+        >{@html $t("app.title_")}</span
+      >
     </div>
   </div>
 </div>

@@ -4,14 +4,14 @@ export const toponyms_fr = {
         {
             "type": "Feature",
             "properties": {
-                "svgHtml": "<svg viewBox='0 0 10 10' width='10' height='10'><circle cx='5' cy='5' r='4' stroke='#c05ad9' stroke-width='1' fill='#c05ad9' /></svg>",
+                "svgHtml": "<svg viewBox='0 0 16 16' width='16' height='16'><circle cx='7' cy='7' r='6' stroke='#fff' stroke-width='2' fill='#c05ad9' /></svg>",
                 "iconWidth": 40,
                 "iconHeight": 40,
                 "hr": "#c05ad9",
-                "ID": 0,
+                "ID": 100000,
                 "name": "Kasinyi",
                 "type": "Toponym",
-                "note": "Kasinyi replaces the toponym Kasenyi, which is shown on the widely used maps."
+                "note": "Kasinyi (populated place) replaces the toponym Kasenyi, which is shown on the widely used maps."
             },
             "geometry": {
                 "coordinates": [
@@ -25,14 +25,14 @@ export const toponyms_fr = {
         {
             "type": "Feature",
             "properties": {
-                "svgHtml": "<svg viewBox='0 0 10 10' width='10' height='10'><circle cx='5' cy='5' r='4' stroke='#c05ad9' stroke-width='1' fill='#c05ad9' /></svg>",
+                "svgHtml": "<svg viewBox='0 0 16 16' width='16' height='16'><circle cx='7' cy='7' r='6' stroke='#fff' stroke-width='2' fill='#c05ad9' /></svg>",
                 "iconWidth": 40,
                 "iconHeight": 40,
                 "hr": "#c05ad9",
-                "ID": 0,
+                "ID": 100001,
                 "name": "Kibambura",
                 "type": "Toponym",
-                "note": "Kibambura replaces the toponym Mbura, which is shown on some maps."
+                "note": "Kibambura (populated place) replaces the toponym Mbura, which is shown on some maps."
             },
             "geometry": {
                 "coordinates": [

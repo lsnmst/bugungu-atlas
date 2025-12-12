@@ -3,6 +3,7 @@
     import { toponyms } from "../data/toponyms.js";
     import { t, waitLocale } from "svelte-i18n";
     import { onMount, createEventDispatcher } from "svelte";
+    import { landmarks } from "../data/landmarks.js";
 
     export let onSelect = (point) => {};
     export let activeLayers = ["points", "toponyms"]; // array of active layer IDs
@@ -21,13 +22,13 @@
 
     // Build unified search index from both layers
     $: searchIndex = [
-        ...points.features.map((f) => ({
+        ...landmarks.features.map((f) => ({
             id: f.properties.ID,
             name: f.properties.name,
             type: f.properties.type,
             coordinates: f.geometry.coordinates,
             properties: f.properties,
-            layerType: "points",
+            layerType: "landmarks",
         })),
         ...toponyms.features.map((f) => ({
             id: f.properties.ID,
@@ -36,6 +37,14 @@
             coordinates: f.geometry.coordinates,
             properties: f.properties,
             layerType: "toponyms",
+        })),
+        ...points.features.map((f) => ({
+            id: f.properties.ID,
+            name: f.properties.name,
+            type: f.properties.type,
+            coordinates: f.geometry.coordinates,
+            properties: f.properties,
+            layerType: "points",
         })),
     ];
 

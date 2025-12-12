@@ -8,7 +8,7 @@ export const toponyms_en = {
                 "iconWidth": 40,
                 "iconHeight": 40,
                 "hr": "#c05ad9",
-                "ID": 0,
+                "ID": 100000,
                 "name": "Kasinyi",
                 "type": "Toponym",
                 "note": "Kasinyi (populated place) replaces the toponym Kasenyi, which is shown on the widely used maps."
@@ -29,7 +29,7 @@ export const toponyms_en = {
                 "iconWidth": 40,
                 "iconHeight": 40,
                 "hr": "#c05ad9",
-                "ID": 0,
+                "ID": 100001,
                 "name": "Kibambura",
                 "type": "Toponym",
                 "note": "Kibambura (populated place) replaces the toponym Mbura, which is shown on some maps."

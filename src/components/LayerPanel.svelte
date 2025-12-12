@@ -52,7 +52,7 @@
 <style>
     .layer-panel {
         position: absolute;
-        top: 200px;
+        bottom: 100px;
         right: 24px;
         z-index: 9988;
         width: 220px;
@@ -70,7 +70,7 @@
         background-image: url("../assets/orchard.svg");
         background-size: 100px 100px;
         text-align: start;
-        overflow: hidden;
+        overflow-y: scroll;
     }
 
     h3 {
