@@ -37,6 +37,9 @@
 
   let legendMap = new Map();
 
+  const Z_NORMAL = 0;
+  const Z_SELECTED = 10000;
+
   featuresWithLayer.forEach(({ feature, layerId }) => {
     const props = feature.properties || {};
     const type = props.type || "unknown";
@@ -121,6 +124,8 @@
         .querySelectorAll(".custom-svg-icon.svg-active")
         .forEach((el) => el.classList.remove("svg-active"));
 
+      layer.setZIndexOffset(Z_SELECTED);
+
       const selector = `.${layerType}-${feature.properties.ID}`;
       const icon = document.querySelector(selector);
       if (icon) icon.classList.add("svg-active");
@@ -129,6 +134,8 @@
     });
 
     layer.on("popupclose", () => {
+      layer.setZIndexOffset(Z_NORMAL);
+
       const selector = `.${layerType}-${feature.properties.ID}`;
       const icon = document.querySelector(selector);
       if (icon) icon.classList.remove("svg-active");
@@ -141,7 +148,9 @@
   function addGeoJson() {
     geoJsonLayer = L.geoJSON(points, {
       pointToLayer: (feature, latlng) =>
-        L.marker(latlng, { icon: createIcon(feature, 15, "points") }),
+        L.marker(latlng, {
+          icon: createIcon(feature, 15, "points"),
+        }),
       onEachFeature: (feature, layer) =>
         onEachFeature(feature, layer, "points"),
     }).addTo(map);
@@ -150,7 +159,9 @@
   function addToponymsLayer() {
     toponymsLayer = L.geoJSON(toponyms, {
       pointToLayer: (feature, latlng) =>
-        L.marker(latlng, { icon: createIcon(feature, 15, "toponyms") }),
+        L.marker(latlng, {
+          icon: createIcon(feature, 15, "points"),
+        }),
       onEachFeature: (feature, layer) =>
         onEachFeature(feature, layer, "toponyms"),
     }).addTo(map);
@@ -159,7 +170,9 @@
   function addLandmarksLayer() {
     landmarksLayer = L.geoJSON(landmarks, {
       pointToLayer: (feature, latlng) =>
-        L.marker(latlng, { icon: createIcon(feature, 15, "landmarks") }),
+        L.marker(latlng, {
+          icon: createIcon(feature, 15, "points"),
+        }),
       onEachFeature: (feature, layer) =>
         onEachFeature(feature, layer, "landmarks"),
     }).addTo(map);
@@ -240,6 +253,7 @@
       map.panTo([offsetLat, lng], { animate: true });
 
       map.once("moveend", () => {
+        targetLayer.setZIndexOffset(Z_SELECTED);
         targetLayer.openPopup();
       });
     });
@@ -258,7 +272,7 @@
     const initialZoom = isMobile ? 12 : 13;
 
     map = L.map(mapEl, {
-      center: [2.187453, 31.481813],
+      center: [2.1591666907005296, 31.396436976538762],
       zoom: initialZoom,
       minZoom: 10,
       maxZoom: 15,
@@ -328,8 +342,8 @@
       },
       {
         id: "points",
-        name: "Layer TEST",
-        description: "Description TEST",
+        name: "Bugungu Heritage and Information Centre",
+        description: "",
         visible: true,
         layer: geoJsonLayer,
         toggle: (v) => {
